@@ -1,0 +1,36 @@
+Accueil  jsp:<h1>Hello World!</h1>
+         <%
+           if (session != null) {
+                   if (session.getAttribute("id")!=null) {
+                           String name=(String) session.getAttribute("id");
+                           out.print("bonjour " +name);
+                       } else {
+                       response.sendRedirect("index.jsp");
+                       }
+               }
+           %>
+
+
+SERVLET : try {
+            String _username=request.getParameter("txtlog");
+            String _pwd=request.getParameter("txtpass");
+        
+               if (_username!=null) {
+                   Class.forName("com.mysql.jdbc.Driver").newInstance();
+                   Connection cnx=DriverManager.getConnection("jdbc:mysql://localhost/authentification","root","");
+                   String sql="select * from log where id=? and pass=?";
+                   PreparedStatement psm=cnx.prepareStatement(sql);
+                   psm.setString(1, _username);   
+                   psm.setString(2, _pwd);
+                   ResultSet rs=psm.executeQuery();
+                   if (rs.next()) {
+                       
+                       HttpSession se=request.getSession(true);
+                       se.setAttribute("id", _username);
+                       se.setMaxInactiveInterval(30);
+                       response.sendRedirect("Accueil.jsp");
+                   }
+                   else{
+                       out.println("error!");
+                   }
+               }}
